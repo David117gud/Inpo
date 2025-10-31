@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Berbagi Video Youtube</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .link-button {
+      transition: all 0.3s ease;
+    }
+    
+    .link-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body>
+  <div id="app" class="min-h-full flex items-center justify-center p-6">
+   <div class="w-full max-w-md"><!-- Profile Section -->
+    <div class="text-center mb-8">
+     <div class="w-24 h-24 mx-auto mb-4 rounded-full flex items-center justify-center text-5xl">
+      🎥
+     </div>
+     <h1 id="page-title" class="text-3xl font-bold mb-2"></h1>
+    </div><!-- Link Button --> <a id="video-link" href="" target="_blank" rel="noopener noreferrer" class="link-button block w-full text-center py-4 px-6 rounded-full font-semibold text-lg shadow-lg"> <span id="button-text"></span> </a>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      page_title: "berbagi video youtube",
+      button_text: "berbagi link video",
+      video_url: "https://youtu.be/I7pKRfEbfJI?si=9jSdqUuAEuJul7CI",
+      background_color: "#1e40af",
+      button_color: "#ffffff",
+      text_color: "#ffffff",
+      button_text_color: "#1e40af",
+      font_family: "system-ui, -apple-system, sans-serif",
+      font_size: 16
+    };
+
+    async function onConfigChange(config) {
+      const pageTitle = document.getElementById('page-title');
+      const buttonText = document.getElementById('button-text');
+      const videoLink = document.getElementById('video-link');
+      const app = document.getElementById('app');
+      
+      // Apply text content
+      pageTitle.textContent = config.page_title || defaultConfig.page_title;
+      buttonText.textContent = config.button_text || defaultConfig.button_text;
+      videoLink.href = config.video_url || defaultConfig.video_url;
+      
+      // Apply colors
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const btnColor = config.button_color || defaultConfig.button_color;
+      const txtColor = config.text_color || defaultConfig.text_color;
+      const btnTxtColor = config.button_text_color || defaultConfig.button_text_color;
+      
+      app.style.background = `linear-gradient(135deg, ${bgColor} 0%, ${adjustBrightness(bgColor, 20)} 100%)`;
+      pageTitle.style.color = txtColor;
+      videoLink.style.backgroundColor = btnColor;
+      buttonText.style.color = btnTxtColor;
+      
+      // Apply font
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = 'system-ui, -apple-system, sans-serif';
+      const fontFamily = `${customFont}, ${baseFontStack}`;
+      
+      pageTitle.style.fontFamily = fontFamily;
+      buttonText.style.fontFamily = fontFamily;
+      
+      // Apply font size
+      const baseSize = config.font_size || defaultConfig.font_size;
+      pageTitle.style.fontSize = `${baseSize * 1.875}px`;
+      buttonText.style.fontSize = `${baseSize * 1.125}px`;
+    }
+    
+    function adjustBrightness(hex, percent) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = Math.min(255, Math.max(0, (num >> 16) + amt));
+      const G = Math.min(255, Math.max(0, (num >> 8 & 0x00FF) + amt));
+      const B = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+      return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.button_color || defaultConfig.button_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ button_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.button_text_color || defaultConfig.button_text_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ button_text_color: value });
+              }
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => {
+            if (window.elementSdk) {
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => {
+            if (window.elementSdk) {
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["page_title", config.page_title || defaultConfig.page_title],
+        ["button_text", config.button_text || defaultConfig.button_text],
+        ["video_url", config.video_url || defaultConfig.video_url]
+      ]);
+    }
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+      
+      // Initial render
+      onConfigChange(window.elementSdk.config);
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9970e6b9b1c8dd77',t:'MTc2MTg5MDEwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
